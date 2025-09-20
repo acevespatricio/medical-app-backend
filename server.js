@@ -29,18 +29,20 @@ app.use(express.json());
 app.use(cors());
 
 // Crea la tabla de perfiles médicos si no existe
+// Las columnas están en minúsculas para evitar problemas de case-sensitivity con PostgreSQL
 client.query(`
     CREATE TABLE IF NOT EXISTS medical_profiles (
         id TEXT PRIMARY KEY,
         name TEXT,
         dob TEXT,
-        bloodType TEXT,
+        bloodtype TEXT,
         allergies TEXT,
         conditions TEXT,
-        socialSecurityNumber TEXT,
-        insurancePolicy TEXT,
-        emergencyContactName TEXT,
-        emergencyContactPhone TEXT
+        socialsecuritynumber TEXT,
+        insurancepolicy TEXT,
+        emergencycontactname TEXT,
+        emergencycontactphone TEXT,
+        url TEXT
     )
 `).then(() => {
     console.log('Tabla medical_profiles verificada o creada.');
@@ -50,34 +52,33 @@ client.query(`
 
 // Endpoint para guardar la información médica (método POST)
 app.post('/save', (req, res) => {
-    console.log('Datos recibidos:', req.body);
     const profileId = uuidv4();
     const { 
         name, 
         dob, 
-        bloodType, 
+        bloodtype, 
         allergies, 
         conditions, 
-        socialSecurityNumber, 
-        insurancePolicy, 
-        emergencyContactName, 
-        emergencyContactPhone 
+        socialsecuritynumber, 
+        insurancepolicy, 
+        emergencycontactname, 
+        emergencycontactphone 
     } = req.body;
 
+    const uniqueUrl = `https://acevespatricio.github.io/medical-app/display.html?id=${profileId}`;
+
     const sql = `INSERT INTO medical_profiles (
-        id, name, dob, bloodType, allergies, conditions, 
-        socialSecurityNumber, insurancePolicy, emergencyContactName, emergencyContactPhone
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
+        id, name, dob, bloodtype, allergies, conditions, 
+        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone, url
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
 
     const values = [
-        profileId, name, dob, bloodType, allergies, conditions, 
-        socialSecurityNumber, insurancePolicy, emergencyContactName, emergencyContactPhone
+        profileId, name, dob, bloodtype, allergies, conditions, 
+        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone, uniqueUrl
     ];
 
     client.query(sql, values)
         .then(() => {
-            // URL actualizada para apuntar a GitHub Pages
-            const uniqueUrl = `https://acevespatricio.github.io/medical-app/display.html?id=${profileId}`;
             res.status(201).json({
                 message: 'Datos guardados exitosamente!',
                 profileId: profileId,
