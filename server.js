@@ -50,6 +50,7 @@ client.query(`
 
 // Endpoint para guardar la información médica (método POST)
 app.post('/save', (req, res) => {
+    console.log('Datos recibidos:', req.body);
     const profileId = uuidv4();
     const { 
         name, 
