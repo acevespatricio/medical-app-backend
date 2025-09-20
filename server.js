@@ -41,7 +41,8 @@ client.query(`
         socialsecuritynumber TEXT,
         insurancepolicy TEXT,
         emergencycontactname TEXT,
-        emergencycontactphone TEXT
+        emergencycontactphone TEXT,
+        url TEXT
     )
 `).then(() => {
     console.log('Tabla medical_profiles verificada o creada.');
@@ -64,19 +65,20 @@ app.post('/save', (req, res) => {
         emergencycontactphone 
     } = req.body;
 
+    const uniqueUrl = `https://acevespatricio.github.io/medical-app/display.html?id=${profileId}`;
+
     const sql = `INSERT INTO medical_profiles (
         id, name, dob, bloodtype, allergies, conditions, 
-        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`;
+        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone, url
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`;
 
     const values = [
         profileId, name, dob, bloodtype, allergies, conditions, 
-        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone
+        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone, uniqueUrl
     ];
 
     client.query(sql, values)
         .then(() => {
-            const uniqueUrl = `https://acevespatricio.github.io/medical-app/display.html?id=${profileId}`;
             res.status(201).json({
                 message: 'Datos guardados exitosamente!',
                 profileId: profileId,
@@ -130,7 +132,8 @@ app.put('/records/:id', (req, res) => {
         socialsecuritynumber, 
         insurancepolicy, 
         emergencycontactname, 
-        emergencycontactphone 
+        emergencycontactphone,
+        url
     } = req.body;
     
     const sql = `
@@ -144,12 +147,13 @@ app.put('/records/:id', (req, res) => {
             socialsecuritynumber = $6, 
             insurancepolicy = $7, 
             emergencycontactname = $8, 
-            emergencycontactphone = $9
-        WHERE id = $10
+            emergencycontactphone = $9,
+            url = $10
+        WHERE id = $11
     `;
     const values = [
         name, dob, bloodtype, allergies, conditions, 
-        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone, id
+        socialsecuritynumber, insurancepolicy, emergencycontactname, emergencycontactphone, url, id
     ];
 
     client.query(sql, values)
